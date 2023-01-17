@@ -74,7 +74,7 @@ const handleSubmit = async (e) => {
   loader(messageDiv);
 
   //fetche data from server
-  const response = await fetch("http://localhost:8000", {
+  const response = await fetch("https://alfred-ai.onrender.com", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
