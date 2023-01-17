@@ -13,7 +13,7 @@ const openai = new OpenAIApi(configuration);
 const app = express();
 app.use(express.json());
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:8000");
+  res.header("Access-Control-Allow-Origin", "http://localhost:5000");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
@@ -49,6 +49,6 @@ app.post("/", async (req, res) => {
   }
 });
 
-app.listen(8000, () =>
-  console.log("Server is running on port http://localhost:8000")
+app.listen(5000, () =>
+  console.log("Server is running on port http://localhost:5000")
 );
