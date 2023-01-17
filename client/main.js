@@ -2,7 +2,7 @@ import bot from "./assets/bot.png";
 import user from "./assets/user.png";
 
 const form = document.querySelector("form");
-const chatContainer = document.querySelector("#chatContainer");
+const chatContainer = document.querySelector("#chat_container");
 
 let loadInterval;
 
@@ -22,7 +22,7 @@ function typeText(element, text) {
 
   let interval = setInterval(() => {
     if (index < text.length) {
-      element.innerHTML += text.chartAt(index);
+      element.innerHTML += text.charAt(index);
       index++;
     } else {
       clearInterval(interval);
@@ -46,13 +46,14 @@ function chatStripe(isAi, value, uniqueId) {
                         <img src ="${isAi ? bot : user}" 
                         alt="${isAi ? "Alfred" : "Batman"}">
                     </div>
-                    <div class="message" id=${uniqueId}>${value}</div>></div>
+                    <div class="message" id=${uniqueId}>${value}</div>
                 </div>
-            </div>
+              </div>
+            
     `;
 }
 
-const hundleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   const data = new FormData(form);
@@ -68,14 +69,40 @@ const hundleSubmit = async (e) => {
 
   chatContainer.scrollTop = chatContainer.scrollHeight;
 
-  const messageDiv = document.getElementById("uniqueId");
+  const messageDiv = document.getElementById(uniqueId);
 
   loader(messageDiv);
+
+  //fetche data from server
+  const response = await fetch("http://localhost:8000", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      prompt: data.get("prompt"),
+    }),
+  });
+
+  clearInterval(loadInterval);
+  messageDiv.innerHTML = " ";
+
+  if (response.ok) {
+    const data = await response.json();
+    const parsedData = data.bot.trim();
+
+    typeText(messageDiv, parsedData);
+  } else {
+    const err = await response.text();
+    messageDiv.innerHTML =
+      "I am sorry, master Bruce, it seems that we may have a problem.";
+    alert(err);
+  }
 };
 
-form.addEventListener("submit", hundleSubmit);
+form.addEventListener("submit", handleSubmit);
 form.addEventListener("keyup", (e) => {
   if (e.keyCode === 13) {
-    hundleSubmit(e);
+    handleSubmit(e);
   }
 });
